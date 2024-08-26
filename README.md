@@ -48,6 +48,12 @@ npm start
 npm test
 
 ```
+### Assumptions
+Mock Providers are used in place of real email providers.
+Rate Limiting and Idempotency use in-memory storage, suitable for development but not for production.
+Logging is basic and can be expanded with more robust logging frameworks in production.
+
+
 By default, the server runs on http://localhost:3000.
 
 
