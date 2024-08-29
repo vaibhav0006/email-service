@@ -3,7 +3,6 @@ const MockYahooProvider = require("../providers/MockYahooProvider");
 const RateLimiter = require("./RateLimiter");
 const IdempotencyService = require("./IdempotencyService");
 const StatusTracker = require("./StatusTracker");
-const EmailQueue = require("./EmailQueue");
 const { log } = require("../utils/logger");
 
 class EmailService {
@@ -13,16 +12,11 @@ class EmailService {
     this.rateLimiter = new RateLimiter();
     this.idempotencyService = new IdempotencyService();
     this.statusTracker = new StatusTracker();
-    this.emailQueue = new EmailQueue();
   }
 
   async sendEmail(emailId, emailDetails) {
-    log("INFO", `Queueing email with ID ${emailId}`);
-    this.emailQueue.addEmailToQueue(emailId, emailDetails);
-    return `Email with ID ${emailId} added to queue for processing`;
-  }
+    log("INFO", `Attempting to send email with ID ${emailId}`);
 
-  async _sendEmail(emailId, emailDetails) {
     if (await this.rateLimiter.isRateLimited(emailId)) {
       const errorMessage = "Rate limit exceeded";
       log("WARN", errorMessage);
@@ -30,8 +24,9 @@ class EmailService {
     }
 
     if (await this.idempotencyService.isDuplicate(emailId)) {
-      log("INFO", "Duplicate email send attempt detected.");
-      return "Duplicate email send attempt";
+      const message = "Duplicate email send attempt detected.";
+      log("INFO", message);
+      return message;
     }
 
     for (let i = 0; i < this.providers.length; i++) {
