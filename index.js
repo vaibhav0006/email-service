@@ -1,8 +1,8 @@
-// src/app.js
+
 const express = require("express");
 const app = express();
-const emailRoutes = require("./routes/emailRoutes");
-const statusRoutes = require("./routes/statusRoutes");
+const emailRoutes = require("./src/routes/emailRoutes");
+const statusRoutes = require("./src/routes/statusRoutes");
 
 app.use(express.json());
 app.use("/api", emailRoutes);
